@@ -132,14 +132,14 @@ resource "aws_security_group" "igor-security-group" {
 resource "aws_instance" "igor_instance" {
   ami           = "ami-022daa15b37b5e55d"
   instance_type = "t2.medium"
-  key_name      = "labos_key"
+  key_name      = "labos"
   vpc_security_group_ids = [aws_security_group.igor-security-group.id]
   subnet_id = aws_subnet.igor_public_subnet.id
-  depends_on = [tls_private_key.labos_key]
   user_data = <<-EOF
 #!/bin/bash
 
 # Clone the repository
+sudo yum install git -y
 git clone https://github.com/grebenaha/labos.git
 cd lab
 sh run.sh
