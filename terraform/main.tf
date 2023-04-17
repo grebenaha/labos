@@ -138,15 +138,38 @@ resource "aws_instance" "igor_instance" {
   user_data = <<-EOF
 #!/bin/bash
 
-# Clone the repository
+# Install Docker and Git
+sudo amazon-linux-extras install docker -y
 sudo yum install git -y
+
+# Start Docker service
+sudo service docker start
+usermod -a -G docker ec2-user
+chkconfig docker on
+
+# Clone the repository
 git clone https://github.com/grebenaha/labos.git
-cd lab
-sh run.sh
+cd labos
+
+# Build the Docker images
+docker build -t web-app . -f app/Dockerfile
+docker build -t my-nginx . -f nginx/Dockerfile
+
+# Create a Docker network
+docker network create my-network
+
+# Start the Docker containers
+docker run -d --name web-app --network my-network web-app
+docker run -d --name my-nginx --network my-network -p 80:80 my-nginx
               EOF
 
   tags = {
     Name = "igor-instance"
   }
 }
+
+output "instance_public_ip" {
+  value = aws_instance.igor_instance.public_ip
+}
+
 
