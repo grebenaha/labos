@@ -140,7 +140,7 @@ resource "aws_instance" "igor_instance" {
 #!/bin/bash
 
 # Clone the repository
-git clone https://github.com/grebenaha/lab.git
+git clone https://github.com/grebenaha/labos.git
 cd lab
 sh run.sh
               EOF
